@@ -39,8 +39,17 @@ public class Bot {
     }
 
     public int[] Storage => _storage;
+    public int[] Expertise => _expertise;
     
     public bool Uninitialized { get; set; }
+    
+    public bool CanResearch(Sample sample) {
+        bool result = true;
+        for (int i=0; i<5; i++)
+            result &= sample.Costs[i]<=(_storage[i] + _expertise[i]);
+        
+        return result;
+    }
 
     public string Request(List<Sample> samples) {
         return _state.Handle(this, samples);
@@ -92,6 +101,7 @@ public class Bot {
         } else if (_state is AtDiagnosis) {
         } else if (_state is AtMolecules) {
         } else if (_state is AtLaboratory) {
+            _sampleCount--;
         }
 
         return result;

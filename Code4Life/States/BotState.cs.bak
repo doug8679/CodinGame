@@ -38,17 +38,7 @@ namespace Code4Life.States {
         public static BotState Instance => _instance.Value;
 
         public override string Handle(Bot bot, List<Sample> samples) {
-            return bot.CanGetSamples ? bot.Connect(DetermineRankRequest(bot)) : bot.Move("DIAGNOSIS");
-        }
-        
-        private string DetermineRankRequest(Bot bot) {
-            string result = "1";
-            if (bot.Expertise.Any(e=> e>=3)) {
-                result = "3";
-            } else if (bot.Expertise.Any(e=>e>=2)) {
-                result = "2";
-            }
-            return result;
+            return bot.Connect("2");
         }
     }
     public class ToDiagnosis : BotState {
@@ -64,7 +54,7 @@ namespace Code4Life.States {
         public static BotState Instance => _instance.Value;
         public override string Handle(Bot bot, List<Sample> samples) {
             string result = "WAIT";
-            var smp = samples.FirstOrDefault(s=>s.Costs[0]==-1 && s.Carrier==0);
+            var smp = samples.FirstOrDefault(s=>s.Costs[0]==-1);
             if (smp == null) {
                 //smp = samples.OrderByDescending(s=>s.Health).First(s=>s.Carrier==0);
                 result = bot.Move("MOLECULES");
@@ -79,7 +69,7 @@ namespace Code4Life.States {
         private static Lazy<BotState> _instance = new Lazy<BotState>(()=>new ToMolecules());
         public static BotState Instance => _instance.Value;
         public override string Handle(Bot bot, List<Sample> samples) {
-            return bot.Wait();
+            return bot.Move("MOLECULES");
         }
     }
     public class AtMolecules : BotState {
@@ -87,31 +77,23 @@ namespace Code4Life.States {
         public static BotState Instance => _instance.Value;
         public override string Handle(Bot bot, List<Sample> samples) {
             string result;
-            var smp = samples.OrderByDescending(s=>s.Health).Where(s=>s.Carrier==0 && CanSatisfy(bot, s)).FirstOrDefault();
-            
+            var smp = samples.First(s=>s.Carrier==0);
             var request = string.Empty;
             int i;
             for (i=0; i<5; i++) {
-                if (smp.Costs[i] > (bot.Storage[i] + bot.Expertise[i])) {
+                if (smp.Costs[i] > bot.Storage[i]) {
                     request = ((char)(i + 65)).ToString();
                     break;
                 }
             }
+            Console.Error.WriteLine($"Request string at molecule module: {request}");
             if (request == string.Empty) {
                 result = bot.Move("LABORATORY");
+                //bot.State = new AtLaboratory();
             } else {
                 result = bot.Connect(request);
                 smp.Costs[i]--;
                 bot.Storage[i]++;
-            }
-            Console.Error.WriteLine($"Request string at molecule module: {result}");
-            return result;
-        }
-        
-        private bool CanSatisfy(Bot b, Sample s) {
-            bool result = true;
-            for (int i=0; i<5; i++) {
-                result &= s.Costs[i] <= (b.Storage[i] + b.Expertise[i] + Molecule.Available[i]);
             }
             return result;
         }
@@ -120,23 +102,16 @@ namespace Code4Life.States {
         private static Lazy<BotState> _instance = new Lazy<BotState>(()=>new ToLaboratory());
         public static BotState Instance => _instance.Value;
         public override string Handle(Bot bot, List<Sample> samples) {
-            return bot.Wait();
+            return bot.Move("LABORATORY");
         }
     }
     public class AtLaboratory : BotState {
         private static Lazy<BotState> _instance = new Lazy<BotState>(()=>new AtLaboratory());
         public static BotState Instance => _instance.Value;
         public override string Handle(Bot bot, List<Sample> samples) {
-            string result = string.Empty;
-            var smp = samples.OrderByDescending(s=>s.Health).Where(s=>s.Carrier==0).FirstOrDefault(bot.CanResearch);
-            if (smp == null) {
-                result = bot.Move("SAMPLES");
-            } else if (bot.CanResearch(smp)) {
-                result = bot.Connect(smp.Id.ToString());
-            } else {
-                result = bot.Move("MOLECULES");
-            }
-            //bot.ClearStorage();
+            var smp = samples.First(s => s.Carrier == 0);
+            string result = bot.Connect(smp.Id.ToString());
+            bot.ClearStorage();
             return result;
         }
     }
