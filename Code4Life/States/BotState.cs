@@ -38,7 +38,7 @@ namespace Code4Life.States {
         public static BotState Instance => _instance.Value;
 
         public override string Handle(Bot bot, List<Sample> samples) {
-            return bot.CanGetSamples ? bot.Connect(DetermineRankRequest(bot)) : bot.Move("DIAGNOSIS");
+            return bot.CanGetSamples ? bot.Connect(bot.NextRank().ToString()) : bot.Move("DIAGNOSIS");
         }
         
         private string DetermineRankRequest(Bot bot) {
@@ -66,7 +66,7 @@ namespace Code4Life.States {
             string result = "WAIT";
             var smp = samples.FirstOrDefault(s=>s.Costs[0]==-1 && s.Carrier==0);
             if (smp == null) {
-                //smp = samples.OrderByDescending(s=>s.Health).First(s=>s.Carrier==0);
+                bot.SelectBestSample(samples);
                 result = bot.Move("MOLECULES");
             } else {
                 result = bot.Connect(smp.Id.ToString());
@@ -87,8 +87,8 @@ namespace Code4Life.States {
         public static BotState Instance => _instance.Value;
         public override string Handle(Bot bot, List<Sample> samples) {
             string result;
-            var smp = samples.OrderByDescending(s=>s.Health).Where(s=>s.Carrier==0 && CanSatisfy(bot, s)).FirstOrDefault();
-            
+            //var smp = samples.OrderByDescending(s=>s.Health).Where(s=>s.Carrier==0 && CanSatisfy(bot, s)).FirstOrDefault();
+            var smp = bot.nextSample;
             var request = string.Empty;
             int i;
             for (i=0; i<5; i++) {
@@ -128,15 +128,18 @@ namespace Code4Life.States {
         public static BotState Instance => _instance.Value;
         public override string Handle(Bot bot, List<Sample> samples) {
             string result = string.Empty;
-            var smp = samples.OrderByDescending(s=>s.Health).Where(s=>s.Carrier==0).FirstOrDefault(bot.CanResearch);
+            //var smp = samples.OrderByDescending(s=>s.Health).Where(s=>s.Carrier==0).FirstOrDefault(bot.CanResearch);
+            var smp = bot.nextSample;
             if (smp == null) {
-                result = bot.Move("SAMPLES");
-            } else if (bot.CanResearch(smp)) {
-                result = bot.Connect(smp.Id.ToString());
+                bot.SelectBestSample(samples);
+                if (smp == null) {
+                    result = bot.Move("SAMPLES");
+                } else {
+                    result = bot.Move("MOLECULES");
+                }
             } else {
-                result = bot.Move("MOLECULES");
+                result = bot.Connect(smp.Id.ToString());
             }
-            //bot.ClearStorage();
             return result;
         }
     }
