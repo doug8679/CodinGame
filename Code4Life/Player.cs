@@ -8,8 +8,8 @@ class Player
     {
         string[] inputs;
         string line;
-        List<Project> projects = new List<Project>();
         int projectCount = int.Parse(Console.ReadLine());
+        List<Project> projects = new List<Project>();
         for (int i = 0; i < projectCount; i++)
         {
             line = Console.ReadLine();
@@ -20,10 +20,10 @@ class Player
             int c = int.Parse(inputs[2]);
             int d = int.Parse(inputs[3]);
             int e = int.Parse(inputs[4]);
-            projects.Add(new Project(a,b,c,d,e));
+            Project.Projects.Add(new Project(a,b,c,d,e));
         }
 
-        Bot bot = new Bot();
+        Bot bot = new Bot(Project.GetEasiestProject());
         // game loop
         while (true)
         {
@@ -36,7 +36,6 @@ class Player
             bot.Update(inputs[0], int.Parse(inputs[1]), int.Parse(inputs[2]), int.Parse(inputs[3]), int.Parse(inputs[4]), int.Parse(inputs[5]), int.Parse(inputs[6]), int.Parse(inputs[7]), int.Parse(inputs[8]), int.Parse(inputs[9]), int.Parse(inputs[10]), int.Parse(inputs[11]), int.Parse(inputs[12]));
             
             Console.ReadLine();
-
             line = Console.ReadLine();
             Console.Error.WriteLine(line);
             inputs = line.Split(' ');
@@ -45,7 +44,7 @@ class Player
             int availableC = int.Parse(inputs[2]);
             int availableD = int.Parse(inputs[3]);
             int availableE = int.Parse(inputs[4]);
-            available = new int[]{availableA, availableB, availableC, availableD, availableE};
+            Molecule.Available = new int[]{availableA, availableB, availableC, availableD, availableE};
             int sampleCount = int.Parse(Console.ReadLine());
             for (int i = 0; i < sampleCount; i++)
             {

@@ -6,21 +6,25 @@ using Code4Life.States;
 namespace Code4Life {
 public class Bot {
     List<Sample> _samples;
+    public Sample nextSample;
     int[] _storage;
     int[] _expertise;
     int _eta;
+    int _nextRank = 0;
     BotState _state;
     private int _sampleCount;
     public bool CanGetSamples => _sampleCount < 3;
     public bool CanGetMolecules => _storage.Sum()<10;
-    
-    public Bot() {
+    Project project;
+
+    public Bot(Project p) {
         Uninitialized = true;
         _storage = new int[5];
         _expertise = new int[5];
         _sampleCount = 0;
         _samples = new List<Sample>();
         _state = AtStart.Instance;
+        project = p;
     }
 
     public BotState State {
@@ -51,7 +55,26 @@ public class Bot {
         return result;
     }
 
-    public string Request(List<Sample> samples) {
+    public bool CouldResearch(Sample sample) {
+        bool result = true;
+        for (int i=0; i<5; i++)
+            result &= sample.Costs[i]<=(_storage[i] + _expertise[i] + Molecule.Available[i]);
+        
+        return result;
+    }
+
+    public void SelectBestSample(List<Sample> samples) {
+        nextSample = null;
+        nextSample = samples.FirstOrDefault(s => CouldResearch(s) && ProjectGains(s)) ?? samples.FirstOrDefault(s => CouldResearch(s));
+    }
+
+        private bool ProjectGains(Sample s)
+        {
+            int index = s.Gain[0]-65;
+            return project.Costs[index] > Expertise[index];
+        }
+
+        public string Request(List<Sample> samples) {
         return _state.Handle(this, samples);
     }
     
@@ -116,6 +139,13 @@ public class Bot {
         return "WAIT";
     }
     
+    public int NextRank() {
+        int result = ++_nextRank;
+        if (result > 3) {
+            result = _nextRank = 1;
+        }
+        return result;
+    }
     public void Update(List<Sample> samples) {
         foreach (var sample in samples.Where(s=>s.Carrier==0)) {
             _samples.Add(sample);
