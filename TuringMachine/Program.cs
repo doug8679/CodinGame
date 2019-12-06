@@ -11,7 +11,7 @@ namespace TuringMachine
             int S = int.Parse(inputs[0]);
             int T = int.Parse(inputs[1]);
             string[] tape = new string[T];
-            Array.Fill(tape, "0");
+            for (int i=0; i<tape.Length; i++) tape[i] = "0";
             int X = int.Parse(inputs[2]);
             string START = Console.ReadLine();
             int N = int.Parse(Console.ReadLine());
@@ -72,6 +72,11 @@ namespace TuringMachine
             tape[cell] = action.Write;
             cell += action.Move;
             Console.Error.WriteLine($"After action, new cell is {cell}, next state is '{action.Next}'.");
+            if (cell >= tape.Length) {
+                return states["OOB_RIGHT"];
+            } else if (cell < 0) {
+                return states["OOB_LEFT"];
+            }
             return states[action.Next];
         }
 
