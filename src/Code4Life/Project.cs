@@ -8,11 +8,11 @@ namespace Code4Life {
         public int[] Costs;
 
         public Project(int costA, int costB, int costC, int costD, int costE) {
-            costs = new int[]{costA,costB,costC,costD,costE};
+            Costs = new int[]{costA,costB,costC,costD,costE};
         }
 
         public int Score() {
-            return costs.Sum() / costs.Length;
+            return Costs.Sum() / Costs.Length;
         }
 
         public static Project GetEasiestProject()
