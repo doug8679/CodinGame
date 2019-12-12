@@ -2,7 +2,7 @@ using NUnit.Framework;
 
 namespace IsbnCheckDigitTests
 {
-    public class Tests
+    public class SolutionTests
     {
         [SetUp]
         public void Setup()
