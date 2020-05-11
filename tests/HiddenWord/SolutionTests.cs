@@ -1,6 +1,8 @@
 using NUnit.Framework;
 
-namespace Tests
+using System.Collections.Generic;
+
+namespace HiddenWord.Test
 {
     public class Tests
     {

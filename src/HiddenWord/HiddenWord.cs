@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 
-namespace Tests
+namespace HiddenWord
 {
     public class WordGrid {
         public char[,] grid;
