@@ -2,13 +2,19 @@ using NUnit.Framework;
 
 using System.Collections.Generic;
 
-namespace HiddenWord.Test
+namespace HiddenWord.Tests
 {
     public class Tests
     {
         [SetUp]
         public void Setup()
         {
+        }
+
+        [Test]
+        public void CanBuildWordGrid() {
+            var grid = new WordGrid(1,1, new string[] {"A"});
+            Assert.AreEqual(1, grid.Size);
         }
 
         [Test]
@@ -57,9 +63,6 @@ namespace HiddenWord.Test
                 "TEGNITRIFIAT",
                 "ENILECOUSAIS"
             });
-            grid.SetRow("BAC", 0);
-            grid.SetRow("EOO", 1);
-            grid.SetRow("CKB", 2);
             var finder = new WordFinder(new List<string>
             {
                 "BASSOV",
@@ -85,7 +88,7 @@ namespace HiddenWord.Test
                 "TUERA",
                 "VOLLEYBALL"
             }, grid);
-            Assert.AreEqual("OK", finder.Find());
+            Assert.AreEqual("CODNGAME", finder.Find());
         }
     }
 }
