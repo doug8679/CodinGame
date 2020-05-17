@@ -10,13 +10,15 @@ namespace RockPaperScissorsLizardSpock
  **/
     public class Solution
     {
-        List<Player> _players = new List<Player>();
+        private Tree<Player> _tourney;
+
+        List<Tree<Player>> _players = new List<Tree<Player>>();
 
         public Solution(string[] players)
         {
             foreach (var player in players)
             {
-                _players.Add(new Player(player.Split(' ')));
+                _players.Add(new Leaf<Player>(new Player(player.Split(' '))));new Player(player.Split(' ')));
             }
         }
 
@@ -24,11 +26,12 @@ namespace RockPaperScissorsLizardSpock
         {
             while (_players.Count > 1)
             {
-                var temp = new List<Player>();
+                var temp = new List<Tree<Player>>();
                 for (int i = 0; i < _players.Count; i += 2)
                 {
-                    var game = _players.Skip(i).Take(2).ToArray();
-                    temp.Add(Test(game));
+                    var p1 = _players[i];
+                    var p2 = _players[i+1];
+                    temp.Add(Game.PlayRound(p1, p2));
                 }
                 _players = temp;
             }
@@ -124,27 +127,48 @@ namespace RockPaperScissorsLizardSpock
     {
         private static IComparer<Sign> COMPARER = new SignComparer();
 
-        public Game(Player l, Player r)
+        public static Tree<Player> PlayRound(Tree<Player> p1, Tree<Player> p2)
         {
-            Left = l;
-            Right = r;
-        }
-
-        public Game Left { get; set; }
-        public Game Right { get; set; }
-        public Game Winner => Test();
-
-        private Player Test()
-        {
-            switch (COMPARER.Compare(Left.Sign, Right.Sign))
+            Tree<Player> result = new Node<Player>(p1, null, p2);
+            switch (COMPARER.Compare(p1.Value.Sign, p2.Value.Sign))
             {
                 case -1:
-                    return Right;
+                    result.Value = p2.Value;
+                    break;
                 case 0:
-                    return (Left.Id < Right.Id) ? Left : Right;
+                    result.Value = (p1.Value.Id < p2.Value.Id) ? p1.Value : p2.Value;
+                    break;
                 default:
-                    return Left;
+                    result.Value = p1.Value;
+                    break;
             }
+            return result;
+        }
+    }
+
+    abstract class Tree<T>
+    {
+        public T Value { get; set; }
+    }
+
+    class Node<T> : Tree<T>
+    {
+        public Node(Tree<T> left, T value, Tree<T> right)
+        {
+            Left = left;
+            Value = value;
+            Right = right;
+        }
+
+        public Tree<T> Left { get; set; }
+        public Tree<T> Right { get; set; }
+    }
+
+    class Leaf<T> : Tree<T>
+    {
+        public Leaf(T value)
+        {
+            Value = value;
         }
     }
 }
