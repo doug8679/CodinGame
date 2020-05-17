@@ -10,9 +10,11 @@ namespace RockPaperScissorsLizardSpock.Test
         }
 
         [Test]
-        public void Test1()
+        public void SameAsExample()
         {
-            Assert.Pass();
+            string[] players = new[] {"4 R", "1 P", "8 P", "3 R", "7 C", "5 S", "6 L", "2 L"};
+            var sol = new Solution(players);
+            Assert.AreEqual("2\n6 5 1", sol.Solve());
         }
     }
 }
