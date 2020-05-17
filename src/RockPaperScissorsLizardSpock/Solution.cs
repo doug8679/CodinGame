@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
 using System.Text;
 
 namespace RockPaperScissorsLizardSpock
@@ -58,20 +56,20 @@ namespace RockPaperScissorsLizardSpock
                 result = new Node(player.Value);
                 if (!node.Left.Value.Equals(player.Value))
                 {
-                    ((Node) result).Left = new Node(node.Left.Value);
+                    result.Left = new Node(node.Left.Value);
                 }
                 else
                 {
-                    ((Node) result).Left = BuildSolutionTree(node.Left);
+                    result.Left = BuildSolutionTree(node.Left);
                 }
 
                 if (!node.Right.Value.Equals(player.Value))
                 {
-                    ((Node) result).Right = new Node(node.Right.Value);
+                    result.Right = new Node(node.Right.Value);
                 }
                 else
                 {
-                    ((Node) result).Right = BuildSolutionTree(node.Right);
+                    result.Right = BuildSolutionTree(node.Right);
                 }
             }
             else if (player is Node)
@@ -84,7 +82,7 @@ namespace RockPaperScissorsLizardSpock
 
         private string DetermineWinner()
         {
-            var winner = _players[0] as Node;
+            var winner = _players[0];
             StringBuilder b = new StringBuilder();
             b.AppendLine($"{winner.Value.Id}");
             List<int> opponents = new List<int>();
