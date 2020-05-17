@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace RockPaperScissorsLizardSpock
 {
@@ -10,8 +11,6 @@ namespace RockPaperScissorsLizardSpock
  **/
     public class Solution
     {
-        private Tree<Player> _tourney;
-
         List<Tree<Player>> _players = new List<Tree<Player>>();
 
         public Solution(string[] players)
@@ -35,7 +34,17 @@ namespace RockPaperScissorsLizardSpock
                 }
                 _players = temp;
             }
-            return string.Empty;
+
+            return DetermineWinner();
+        }
+
+        private string DetermineWinner()
+        {
+            var winner = _players[0] as Node<Player>;
+            StringBuilder b = new StringBuilder();
+            b.AppendLine($"{winner.Value.Id}");
+            List<int> opponents = new List<int>();
+            throw new NotImplementedException();
         }
 
         static void Main(string[] args)
@@ -48,9 +57,6 @@ namespace RockPaperScissorsLizardSpock
             }
 
             var sln = new Solution(players);
-
-            // Write an answer using Console.WriteLine()
-            // To debug: Console.Error.WriteLine("Debug messages...");
 
             Console.WriteLine(sln.Solve());
         }
