@@ -18,7 +18,7 @@ namespace RockPaperScissorsLizardSpock
         {
             foreach (var player in players)
             {
-                _players.Add(new Leaf<Player>(new Player(player.Split(' '))));new Player(player.Split(' ')));
+                _players.Add(new Leaf<Player>(new Player(player.Split(' '))));
             }
         }
 
