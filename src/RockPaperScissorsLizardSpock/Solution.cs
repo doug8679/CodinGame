@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 
 namespace RockPaperScissorsLizardSpock
@@ -35,6 +36,8 @@ namespace RockPaperScissorsLizardSpock
                 _players = temp;
             }
 
+            Tree<Player> tree = new Node<Player>(_players[0].Value);
+
             return DetermineWinner();
         }
 
@@ -44,6 +47,8 @@ namespace RockPaperScissorsLizardSpock
             StringBuilder b = new StringBuilder();
             b.AppendLine($"{winner.Value.Id}");
             List<int> opponents = new List<int>();
+
+            
             throw new NotImplementedException();
         }
 
@@ -154,15 +159,23 @@ namespace RockPaperScissorsLizardSpock
 
     abstract class Tree<T>
     {
+        protected Tree(T value)
+        {
+            Value = value;
+        }
+
         public T Value { get; set; }
     }
 
     class Node<T> : Tree<T>
     {
-        public Node(Tree<T> left, T value, Tree<T> right)
+        public Node(T value) : base(value)
+        {
+        }
+
+        public Node(Tree<T> left, T value, Tree<T> right) : base(value)
         {
             Left = left;
-            Value = value;
             Right = right;
         }
 
@@ -172,9 +185,6 @@ namespace RockPaperScissorsLizardSpock
 
     class Leaf<T> : Tree<T>
     {
-        public Leaf(T value)
-        {
-            Value = value;
-        }
+        public Leaf(T value) : base(value) {}
     }
 }
