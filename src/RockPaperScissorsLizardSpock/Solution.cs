@@ -12,13 +12,13 @@ namespace RockPaperScissorsLizardSpock
  **/
     public class Solution
     {
-        List<Tree<Player>> _players = new List<Tree<Player>>();
+        List<Node> _players = new List<Node>();
 
         public Solution(string[] players)
         {
             foreach (var player in players)
             {
-                _players.Add(new Leaf<Player>(new Player(player.Split(' '))));
+                _players.Add(new Node(new Player(player.Split(' '))));
             }
         }
 
@@ -26,7 +26,7 @@ namespace RockPaperScissorsLizardSpock
         {
             while (_players.Count > 1)
             {
-                var temp = new List<Tree<Player>>();
+                var temp = new List<Node>();
                 for (int i = 0; i < _players.Count; i += 2)
                 {
                     var p1 = _players[i];
@@ -36,14 +36,55 @@ namespace RockPaperScissorsLizardSpock
                 _players = temp;
             }
 
-            Tree<Player> tree = new Node<Player>(_players[0].Value);
+            WriteTree(_players[0]);
+
+            Node tree = BuildSolutionTree(_players[0]);
+            WriteTree(tree);
+
 
             return DetermineWinner();
         }
 
+        private void WriteTree(Node player)
+        {
+            throw new NotImplementedException();
+        }
+
+        private Node BuildSolutionTree(Node player)
+        {
+            Node result = null;
+            if (player is Node node)
+            {
+                result = new Node(player.Value);
+                if (!node.Left.Value.Equals(player.Value))
+                {
+                    ((Node) result).Left = new Node(node.Left.Value);
+                }
+                else
+                {
+                    ((Node) result).Left = BuildSolutionTree(node.Left);
+                }
+
+                if (!node.Right.Value.Equals(player.Value))
+                {
+                    ((Node) result).Right = new Node(node.Right.Value);
+                }
+                else
+                {
+                    ((Node) result).Right = BuildSolutionTree(node.Right);
+                }
+            }
+            else if (player is Node)
+            {
+                result = player;
+            }
+
+            return result;
+        }
+
         private string DetermineWinner()
         {
-            var winner = _players[0] as Node<Player>;
+            var winner = _players[0] as Node;
             StringBuilder b = new StringBuilder();
             b.AppendLine($"{winner.Value.Id}");
             List<int> opponents = new List<int>();
@@ -138,9 +179,9 @@ namespace RockPaperScissorsLizardSpock
     {
         private static IComparer<Sign> COMPARER = new SignComparer();
 
-        public static Tree<Player> PlayRound(Tree<Player> p1, Tree<Player> p2)
+        public static Node PlayRound(Node p1, Node p2)
         {
-            Tree<Player> result = new Node<Player>(p1, null, p2);
+            Node result = new Node(p1, null, p2);
             switch (COMPARER.Compare(p1.Value.Sign, p2.Value.Sign))
             {
                 case -1:
@@ -157,34 +198,23 @@ namespace RockPaperScissorsLizardSpock
         }
     }
 
-    abstract class Tree<T>
+    class Node
     {
-        protected Tree(T value)
+        public Node(Player value)
         {
             Value = value;
         }
 
-        public T Value { get; set; }
-    }
-
-    class Node<T> : Tree<T>
-    {
-        public Node(T value) : base(value)
-        {
-        }
-
-        public Node(Tree<T> left, T value, Tree<T> right) : base(value)
+        public Node(Node left, Player value, Node right): this(value)
         {
             Left = left;
             Right = right;
         }
 
-        public Tree<T> Left { get; set; }
-        public Tree<T> Right { get; set; }
-    }
+        public Player Value { get; set; }
+        public Node Left { get; set; }
+        public Node Right { get; set; }
 
-    class Leaf<T> : Tree<T>
-    {
-        public Leaf(T value) : base(value) {}
+        public bool IsLeaf => Left == null && Right == null;
     }
 }
