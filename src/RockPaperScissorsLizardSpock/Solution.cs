@@ -6,9 +6,9 @@ using System.Text;
 namespace RockPaperScissorsLizardSpock
 {
     /**
- * Auto-generated code below aims at helping you parse
- * the standard input according to the problem statement.
- **/
+     * Auto-generated code below aims at helping you parse
+     * the standard input according to the problem statement.
+     **/
     public class Solution
     {
         List<Node> _players = new List<Node>();
@@ -36,59 +36,42 @@ namespace RockPaperScissorsLizardSpock
             }
 
             Stack<Player> opponents = new Stack<Player>();
-            BuildSolutionTree(_players[0], _players[0].Value, ref opponents);
+            var node = FindPlayerLeaf(_players[0], _players[0].Winner());
 
-            return $"{_players[0].Value.Id}\n{string.Join(" ", opponents.Select(p => p.Id))}";
-        }
-
-        private void WriteTree(Node player)
-        {
-            if (player.Left != null)
-                WriteTree(player.Left);
-            Console.Write($"{player.Value.Id} ");
-            if (player.Right != null)
-                WriteTree(player.Right);
-
-        }
-
-        private void BuildSolutionTree(Node node, Player player, ref Stack<Player> opponents)
-        {
-            if (!node.Value.Equals(player))
+            StringBuilder result = new StringBuilder();
+            Console.Error.WriteLine($"{node.Winner()}");
+            result.AppendLine($"{node.Winner()}");
+            node = node.Parent;
+            while (node != null)
             {
-                opponents.Push(node.Value);
+                Console.Error.Write($"{node.Loser()} ");
+                result.Append($"{node.Loser()} ");
+                node = node.Parent;
             }
 
-            if (!node.IsLeaf)
-            {
-                if (node.Left != null && node.Left.Value.Equals(player))
-                {
-                    BuildSolutionTree(node.Left, player, ref opponents);
-                }
-                else
-                {
-                    opponents.Push(node.Left.Value);
-                }
-
-                if (node.Right != null && node.Right.Value.Equals(player))
-                {
-                    BuildSolutionTree(node.Right, player, ref opponents);
-                }
-                else
-                {
-                    opponents.Push(node.Right.Value);
-                }
-            }
+            return result.ToString().Trim();
         }
 
-        private string DetermineWinner()
+        private Node FindPlayerLeaf(Node node, int valueId)
         {
-            var winner = _players[0];
-            StringBuilder b = new StringBuilder();
-            b.AppendLine($"{winner.Value.Id}");
-            List<int> opponents = new List<int>();
+            if (node.IsLeaf && node.Value.Id == valueId)
+            {
+                return node;
+            }
+            else
+            {
+                if (node.Left.Value.Id == valueId)
+                {
+                    return FindPlayerLeaf(node.Left, valueId);
+                }
 
+                if (node.Right.Value.Id == valueId)
+                {
+                    return FindPlayerLeaf(node.Right, valueId);
+                }
+            }
 
-            return string.Empty;
+            return null;
         }
 
         static void Main(string[] args)
@@ -227,5 +210,15 @@ namespace RockPaperScissorsLizardSpock
         public Node Right { get; set; }
 
         public bool IsLeaf => Left == null && Right == null;
+
+        public int Loser()
+        {
+            return (Left.Value.Id == Value.Id) ? Right.Value.Id : Left.Value.Id;
+        }
+
+        public int Winner()
+        {
+            return Value.Id;
+        }
     }
 }
