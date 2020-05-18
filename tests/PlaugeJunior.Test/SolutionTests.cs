@@ -36,9 +36,22 @@ namespace PlagueJunior.Test
                 Console.SetIn(reader);
                 Console.SetOut(writer);
                 Solution.Main(new string[0]);
-                Assert.AreEqual("1", b.ToString());
+                Assert.AreEqual("1", b.ToString().Trim());
             }
-            Assert.Pass();
+        }
+
+        [Test]
+        public void EasyCase()
+        {
+            StringBuilder b = new StringBuilder();
+            using (var reader = new StreamReader(_provider.GetFileInfo("EasyCase.txt").CreateReadStream()))
+            using (var writer = new StringWriter(b))
+            {
+                Console.SetIn(reader);
+                Console.SetOut(writer);
+                Solution.Main(new string[0]);
+                Assert.AreEqual("6", b.ToString().Trim());
+            }
         }
     }
 }
