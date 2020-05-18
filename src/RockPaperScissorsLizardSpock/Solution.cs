@@ -190,6 +190,7 @@ namespace RockPaperScissorsLizardSpock
         {
             Console.Error.Write($"Game between ({p1.Value}) and ({p2.Value}): ");
             Node result = new Node(p1, null, p2);
+            p1.Parent = p2.Parent = result;
             switch (COMPARER.Compare(p1.Value.Sign, p2.Value.Sign))
             {
                 case -1:
@@ -220,6 +221,7 @@ namespace RockPaperScissorsLizardSpock
             Right = right;
         }
 
+        public Node Parent { get; set; }
         public Player Value { get; set; }
         public Node Left { get; set; }
         public Node Right { get; set; }
