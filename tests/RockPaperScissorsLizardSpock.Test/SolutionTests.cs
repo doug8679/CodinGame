@@ -1,3 +1,4 @@
+using System;
 using NUnit.Framework;
 
 namespace RockPaperScissorsLizardSpock.Test
@@ -14,7 +15,7 @@ namespace RockPaperScissorsLizardSpock.Test
         {
             string[] players = new[] {"4 R", "1 P", "8 P", "3 R", "7 C", "5 S", "6 L", "2 L"};
             var sol = new Solution(players);
-            Assert.AreEqual("2\n6 5 1", sol.Solve());
+            Assert.AreEqual($"2{Environment.NewLine}6 5 1", sol.Solve());
         }
 
         [Test]
@@ -22,7 +23,7 @@ namespace RockPaperScissorsLizardSpock.Test
         {
             string[] players = new[] {"1 S", "2 S"};
             var sol = new Solution(players);
-            Assert.AreEqual("1\n2", sol.Solve());
+            Assert.AreEqual($"1{Environment.NewLine}2", sol.Solve());
         }
 
         [Test]
@@ -62,7 +63,7 @@ namespace RockPaperScissorsLizardSpock.Test
                 "2 L", "12 L", "17 S"
             };
             var sol = new Solution(players);
-            Assert.AreEqual("10\n30 31 20 11 15", sol.Solve());
+            Assert.AreEqual($"10{Environment.NewLine}30 31 20 11 15", sol.Solve());
         }
     }
 }
