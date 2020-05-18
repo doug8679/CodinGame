@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace RockPaperScissorsLizardSpock
@@ -34,50 +35,49 @@ namespace RockPaperScissorsLizardSpock
                 _players = temp;
             }
 
-            WriteTree(_players[0]);
+            Stack<Player> opponents = new Stack<Player>();
+            BuildSolutionTree(_players[0], _players[0].Value, ref opponents);
 
-            Node tree = BuildSolutionTree(_players[0]);
-            WriteTree(tree);
-
-
-            return DetermineWinner();
+            return $"{_players[0].Value.Id}\n{string.Join(" ", opponents.Select(p => p.Id))}";
         }
 
         private void WriteTree(Node player)
         {
-            throw new NotImplementedException();
+            if (player.Left != null)
+                WriteTree(player.Left);
+            Console.Write($"{player.Value.Id} ");
+            if (player.Right != null)
+                WriteTree(player.Right);
+
         }
 
-        private Node BuildSolutionTree(Node player)
+        private void BuildSolutionTree(Node node, Player player, ref Stack<Player> opponents)
         {
-            Node result = null;
-            if (player is Node node)
+            if (!node.Value.Equals(player))
             {
-                result = new Node(player.Value);
-                if (!node.Left.Value.Equals(player.Value))
+                opponents.Push(node.Value);
+            }
+
+            if (!node.IsLeaf)
+            {
+                if (node.Left != null && node.Left.Value.Equals(player))
                 {
-                    result.Left = new Node(node.Left.Value);
+                    BuildSolutionTree(node.Left, player, ref opponents);
                 }
                 else
                 {
-                    result.Left = BuildSolutionTree(node.Left);
+                    opponents.Push(node.Left.Value);
                 }
 
-                if (!node.Right.Value.Equals(player.Value))
+                if (node.Right != null && node.Right.Value.Equals(player))
                 {
-                    result.Right = new Node(node.Right.Value);
+                    BuildSolutionTree(node.Right, player, ref opponents);
                 }
                 else
                 {
-                    result.Right = BuildSolutionTree(node.Right);
+                    opponents.Push(node.Right.Value);
                 }
             }
-            else if (player is Node)
-            {
-                result = player;
-            }
-
-            return result;
         }
 
         private string DetermineWinner()
@@ -87,8 +87,8 @@ namespace RockPaperScissorsLizardSpock
             b.AppendLine($"{winner.Value.Id}");
             List<int> opponents = new List<int>();
 
-            
-            throw new NotImplementedException();
+
+            return string.Empty;
         }
 
         static void Main(string[] args)
@@ -171,6 +171,15 @@ namespace RockPaperScissorsLizardSpock
         }
         public int Id { get; set; }
         public Sign Sign { get; set; }
+
+        #region Overrides of Object
+
+        public override string ToString()
+        {
+            return $"{Id} {Sign}";
+        }
+
+        #endregion
     }
 
     class Game
@@ -179,6 +188,7 @@ namespace RockPaperScissorsLizardSpock
 
         public static Node PlayRound(Node p1, Node p2)
         {
+            Console.Error.Write($"Game between ({p1.Value}) and ({p2.Value}): ");
             Node result = new Node(p1, null, p2);
             switch (COMPARER.Compare(p1.Value.Sign, p2.Value.Sign))
             {
@@ -192,6 +202,7 @@ namespace RockPaperScissorsLizardSpock
                     result.Value = p1.Value;
                     break;
             }
+            Console.Error.WriteLine($"{result.Value}");
             return result;
         }
     }
