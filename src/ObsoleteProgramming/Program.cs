@@ -154,27 +154,28 @@ public class Solution
         string op = ops.Dequeue();
         int level = 0;
         bool stop = op.Equals("FI") && level == 0;
-        bool skip = false;
         while (!stop)
         {
+            bool skip = false;
             switch (op) 
             {
                 case "IF":
                     level++;
                     break;
                 case "ELS":
-                    if (level == 0) current = fb;
-                    skip=true;
+                    if (level == 0) {
+                        current = fb;
+                        skip=true;
+                    }
                     break;
                 case "FI":
-                    level--;
+                    if (level > 0) level--;
                     break;
             }
             
             if (!skip)
             {
                 current.Enqueue(op);
-                skip = false;
             }
 
             op = ops.Dequeue();
