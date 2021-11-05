@@ -14,7 +14,13 @@ namespace TwoZeroFourEight
         private const int SIZE = 4;
         public static string[] DIRECTIONS = new string[] {"U", "R", "L"};
 
-        static void Main(string[] args)
+        static void Main(string[] args){
+            long seed = long.Parse(Console.ReadLine());
+            var b = Board.CreateWithLookAhead(seed, 3);
+            Console.WriteLine(b);
+        }
+
+        static void OldMain(string[] args)
         {
             // game loop
             while (true)
